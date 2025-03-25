@@ -62,31 +62,6 @@ def create_dbx():
             )
             print("База данных не найдена (1/5) | Создаём таблицу пользователей...")
 
-        # Создание таблицы с хранением - настроек
-        if len(con.execute("PRAGMA table_info(Settings)").fetchall()) == 1:
-            print("База данных найдена (2/5) - Таблица настроек")
-        else:
-            con.execute(
-                ded(f"""
-                    CREATE TABLE Settings(
-                        status_work TEXT
-                    )
-                """)
-            )
-
-            con.execute(
-                ded(f"""
-                    INSERT INTO Settings(
-                        status_work
-                    )
-                    VALUES (?)
-                """),
-                [
-                    'True',
-                ]
-            )
-            print("База данных не найдена (2/5) | Создаём таблицу настроек...")
-
         # Создание таблицы для хранения файлов
         if len(con.execute("PRAGMA table_info(Files)").fetchall()) == 9:
             print("База данных найдена (3/5) - Таблица файлов")
@@ -97,12 +72,15 @@ def create_dbx():
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         name TEXT,
                         path TEXT,
-                        extensions_id INTEGER,
-                        mime_type TEXT,
-                        file_hash TEXT,
                         user_id INTEGER,
+                        extensions_id INTEGER,
+                        mime_type_id INTEGER,
+                        file_hash TEXT,
                         size INTEGER,
-                        created_at INTEGER
+                        created_at INTEGER,
+                        FOREIGN KEY (user_id) REFERENCES Users(id)
+                        FOREIGN KEY (extensions_id) REFERENCES Extensions(id),
+                        FOREIGN KEY (mime_type_id) REFERENCES MimeTypes(id)
                     )
                 """)
             )

@@ -185,5 +185,7 @@ fabric.properties
 # Users exceptions
 /other/
 /tgbot/data/database.db
+/tgbot/data/encryption_key.key
 /tgbot/data/logs.log
 settings.ini
+/files/

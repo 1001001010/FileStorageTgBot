@@ -123,6 +123,19 @@ class Userx:
 
             con.execute(sql, parameters)
 
+    # Получение пользователей за определенный период
+    @staticmethod
+    def get_by_period(start_time: int) -> list[UserModel]:
+        with sqlite3.connect(PATH_DATABASE) as con:
+            con.row_factory = dict_factory
+            sql = f"""
+                SELECT * FROM {Userx.storage_name}
+                WHERE created_at >= ?
+            """
+            response = con.execute(sql, (start_time,)).fetchall()
+
+            return [UserModel(**user) for user in response] if response else []
+
     # Очистка всех записей
     @staticmethod
     def clear():

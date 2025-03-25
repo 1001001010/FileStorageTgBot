@@ -15,6 +15,7 @@ from tgbot.services.api_session import AsyncRequestSession
 from tgbot.utils.misc.bot_commands import set_commands
 from tgbot.utils.misc.bot_logging import bot_logger
 from tgbot.utils.misc_functions import autobackup_admin, startup_notify
+from tgbot.utils.misc.encryption import generate_encryption_key
 
 colorama.init()
 
@@ -36,6 +37,7 @@ async def main():
         ),
     )
 
+    generate_encryption_key()
     register_all_middlwares(dp)  # Регистрация всех мидлварей
     register_all_routers(dp)  # Регистрация всех роутеров
 

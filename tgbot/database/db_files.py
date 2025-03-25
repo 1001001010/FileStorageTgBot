@@ -11,10 +11,12 @@ class FileModel(BaseModel):
     name: str  # Имя файла
     path: str  # Путь к файлу
     extensions_id: int  # ID расширения
-    mime_type: str  # MIME-тип файла
+    mime_type_id: int  # ID MIME-тип файла (поле id)
     file_hash: str  # Хеш файла
     user_id: int  # ID пользователя, загрузившего файл
     size: int  # Размер файла в байтах
+    # extension: str  # Расширение файла
+    # mime_type: str  # MIME-тип файла
     created_at: int  # Дата создания файла в UNIX-времени
 
 # Работа с файлами
@@ -27,22 +29,21 @@ class Filex:
             name: str,
             path: str,
             extensions_id: int,
-            mime_type: str,
-            file_hash: str,
+            mime_type_id: int,
             user_id: int,
+            file_hash: str,
             size: int,
     ):
         created_at = get_unix()
-
         with sqlite3.connect(PATH_DATABASE) as con:
             con.row_factory = dict_factory
             con.execute(
                 ded(f"""
                     INSERT INTO {Filex.storage_name} (
-                        name, path, extensions_id, mime_type, file_hash, user_id, size, created_at
+                        name, path, extensions_id, mime_type_id, file_hash, user_id, size, created_at
                     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 """),
-                [name, path, extensions_id, mime_type, file_hash, user_id, size, created_at]
+                [name, path, extensions_id, mime_type_id, file_hash, user_id, size, created_at]
             )
 
     # Получение записи
@@ -52,9 +53,13 @@ class Filex:
             con.row_factory = dict_factory
             sql = f"SELECT * FROM {Filex.storage_name}"
             sql, parameters = update_format_where(sql, kwargs)
+
             response = con.execute(sql, parameters).fetchone()
 
-            return FileModel(**response) if response else None
+            if response is not None:
+                response = FileModel(**response)
+
+            return response
 
     # Получение записей
     @staticmethod
@@ -63,9 +68,13 @@ class Filex:
             con.row_factory = dict_factory
             sql = f"SELECT * FROM {Filex.storage_name}"
             sql, parameters = update_format_where(sql, kwargs)
+
             response = con.execute(sql, parameters).fetchall()
 
-            return [FileModel(**cache_object) for cache_object in response] if response else []
+            if len(response) >= 1:
+                response = [FileModel(**cache_object) for cache_object in response]
+
+            return response
 
     # Получение всех записей
     @staticmethod
@@ -75,7 +84,23 @@ class Filex:
             sql = f"SELECT * FROM {Filex.storage_name}"
             response = con.execute(sql).fetchall()
 
-            return [FileModel(**cache_object) for cache_object in response] if response else []
+            if len(response) >= 1:
+                response = [FileModel(**cache_object) for cache_object in response]
+                
+            return response
+
+    # Получение файлов за определенный период
+    @staticmethod
+    def get_by_period(start_time: int) -> list[FileModel]:
+        with sqlite3.connect(PATH_DATABASE) as con:
+            con.row_factory = dict_factory
+            sql = f"""
+                SELECT * FROM {Filex.storage_name}
+                WHERE created_at >= ?
+            """
+            response = con.execute(sql, (start_time,)).fetchall()
+
+            return [FileModel(**user) for user in response] if response else []
 
     # Редактирование записи
     @staticmethod

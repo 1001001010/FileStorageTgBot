@@ -1,9 +1,11 @@
 # - *- coding: utf- 8 - *-
 import time
-from datetime import datetime
 import pytz
+import uuid
+import random
 from aiogram import Bot
-from aiogram.types import KeyboardButton, Message
+from datetime import datetime
+from aiogram.types import KeyboardButton, Message, InlineKeyboardButton
 
 from tgbot.data.config import get_admins, BOT_TIMEZONE
 
@@ -48,6 +50,14 @@ def get_date(full: bool = True) -> str:
     else:
         return datetime.now(pytz.timezone(BOT_TIMEZONE)).strftime("%d.%m.%Y")
     
+# Генерация уникального айди
+def gen_id(len_id: int = 16) -> int:
+    mac_address = uuid.getnode()
+    time_unix = int(str(time.time_ns())[:len_id])
+    random_int = int(''.join(random.choices('0123456789', k=len_id)))
+
+    return mac_address + time_unix + random_int
+
 
 # Очистка текста от HTML тэгов ('<b>test</b>' -> *b*test*/b*)
 def clear_html(get_text: str) -> str:
@@ -82,3 +92,30 @@ async def send_admins(bot: Bot, text: str, markup=None, not_me=0):
                 )
         except:
             ...
+            
+            
+# Генерация инлайн кнопки
+def ikb(
+        text: str,
+        data: str = None,
+        url: str = None,
+        copy: str = None,
+        login: str = None,
+) -> InlineKeyboardButton:
+    if data is not None:
+        return InlineKeyboardButton(text=text, callback_data=data)
+    elif url is not None:
+        return InlineKeyboardButton(text=text, url=url)
+    elif copy is not None:
+        return InlineKeyboardButton(text=text, copy_text=CopyTextButton(text=copy))
+    
+    
+# Форматирование размера файлов
+def format_size(size: int) -> str:
+    """Форматирует размер в байты, КБ, МБ, ГБ и ТБ."""
+    units = ['Б', 'КБ', 'МБ', 'ГБ', 'ТБ']
+    index = 0
+    while size >= 1024 and index < len(units) - 1:
+        size /= 1024
+        index += 1
+    return f"{size:.2f} {units[index]}"
