@@ -3,6 +3,7 @@ from aiogram import Bot
 from aiogram.types import FSInputFile
 
 from tgbot.data.config import get_admins, PATH_DATABASE, BOT_STATUS_NOTIFICATION
+from tgbot.database.db_files import FileModel, Filex 
 from tgbot.utils.const_functions import get_date, send_admins
 
 
@@ -23,3 +24,4 @@ async def autobackup_admin(bot: Bot):
             )
         except:
             ...
+            
