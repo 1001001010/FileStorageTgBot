@@ -1,6 +1,5 @@
 # - *- coding: utf- 8 - *-
 import math
-
 from aiogram.types import InlineKeyboardButton
 
 from tgbot.utils.const_functions import ikb

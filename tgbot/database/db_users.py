@@ -19,7 +19,6 @@ class UserModel(BaseModel):
     created_at: int  # Дата регистрации пользователя в боте (в UNIX времени)
 
 
-# Работа с юзером
 class Userx:
     storage_name = "Users"
 

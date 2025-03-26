@@ -11,7 +11,7 @@ def menu_frep(user_id: int) -> ReplyKeyboardMarkup:
     keyboard = ReplyKeyboardBuilder()
 
     keyboard.row(
-        rkb("📤 Загрузить файлы"), rkb("🧮 Мои файлы"),
+        rkb("📤 Загрузить файлы"), rkb("📁 Папки"), rkb("🧮 Мои файлы"),
     )
 
     if user_id in get_admins():

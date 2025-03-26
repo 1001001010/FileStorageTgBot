@@ -51,36 +51,57 @@ def create_dbx():
                 ded(f"""
                     CREATE TABLE Users(
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        user_id INTEGER,
+                        user_id INTEGER NOT NULL,
                         user_login TEXT,
                         user_name TEXT,
                         user_surname TEXT,
                         user_fullname TEXT,
-                        created_at INTEGER
+                        created_at INTEGER NOT NULL
                     )
                 """)
             )
             print("База данных не найдена (1/5) | Создаём таблицу пользователей...")
 
+        # Создание таблицы для хранения папок
+        if len(con.execute("PRAGMA table_info(Folders)").fetchall()) == 5:
+            print("База данных найдена (2/5) - Таблица папок")
+        else:
+            con.execute(
+                ded(f"""
+                    CREATE TABLE Folders(
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        name TEXT NOT NULL,
+                        folder_id INTEGER,
+                        user_id INTEGER NOT NULL,
+                        created_at INTEGER NOT NULL,
+                        FOREIGN KEY (folder_id) REFERENCES Folders(id) ON DELETE CASCADE
+                    )
+                """)
+            )
+            print("База данных не найдена (3/5) | Создаём таблицу папок...")
+
         # Создание таблицы для хранения файлов
-        if len(con.execute("PRAGMA table_info(Files)").fetchall()) == 9:
+        if len(con.execute("PRAGMA table_info(Files)").fetchall()) == 11:
             print("База данных найдена (3/5) - Таблица файлов")
         else:
             con.execute(
                 ded(f"""
                     CREATE TABLE Files(
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        name TEXT,
-                        path TEXT,
-                        user_id INTEGER,
+                        name TEXT NOT NULL,
+                        path TEXT NOT NULL,
+                        user_id INTEGER NOT NULL,
+                        folder_id INTEGER,
                         extensions_id INTEGER,
                         mime_type_id INTEGER,
-                        file_hash TEXT,
-                        size INTEGER,
-                        created_at INTEGER,
-                        FOREIGN KEY (user_id) REFERENCES Users(id)
-                        FOREIGN KEY (extensions_id) REFERENCES Extensions(id),
-                        FOREIGN KEY (mime_type_id) REFERENCES MimeTypes(id)
+                        file_hash TEXT NOT NULL,
+                        size INTEGER NOT NULL,
+                        created_at INTEGER NOT NULL,
+                        views INTEGER DEFAULT 0,
+                        FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE,
+                        FOREIGN KEY (folder_id) REFERENCES Folders(id) ON DELETE CASCADE,
+                        FOREIGN KEY (extensions_id) REFERENCES Extensions(id) ON DELETE CASCADE,
+                        FOREIGN KEY (mime_type_id) REFERENCES MimeTypes(id) ON DELETE CASCADE
                     )
                 """)
             )
@@ -94,8 +115,8 @@ def create_dbx():
                 ded(f"""
                     CREATE TABLE Extensions(
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        extension TEXT,
-                        created_at INTEGER
+                        extension TEXT NOT NULL,
+                        created_at INTEGER NOT NULL
                     )
                 """)
             )
@@ -109,8 +130,8 @@ def create_dbx():
                 ded(f"""
                     CREATE TABLE MimeTypes(
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        mime_type TEXT,
-                        created_at INTEGER
+                        mime_type TEXT NOT NULL,
+                        created_at INTEGER NOT NULL
                     )
                 """)
             )

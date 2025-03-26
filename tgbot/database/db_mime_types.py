@@ -10,7 +10,6 @@ class MimeTypeModel(BaseModel):
     mime_type: str  # MIME-тип
     created_at: int  # Дата создания записи в UNIX-времени
 
-# Работа с MIME-типами
 class MimeTypesx:
     storage_name = "MimeTypes"
 

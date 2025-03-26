@@ -31,6 +31,6 @@ async def main_callback_missed(call: CallbackQuery, bot: Bot, state: FSM, arSess
 @router.message()
 async def main_message_missed(message: Message, bot: Bot, state: FSM, arSession: ARS, User: UserModel):
     await message.answer(
-        "♦️ Unknown command.\n"
-        "♦️ Enter /start",
+        "❗ <b>Неизвестная команда</b>\n"
+        "🔄 Пожалуйста, используйте команду <code>/start</code>"
     )

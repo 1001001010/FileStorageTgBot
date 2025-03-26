@@ -10,7 +10,6 @@ class ExtensionModel(BaseModel):
     extension: str  # Расширение файла
     created_at: int  # Дата создания записи в UNIX-времени
 
-# Работа с расширениями
 class Extensionsx:
     storage_name = "Extensions"
 
