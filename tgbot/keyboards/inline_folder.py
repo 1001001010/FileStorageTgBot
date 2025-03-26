@@ -15,10 +15,11 @@ class FolderBackVariants(Enum):
 # Открытие списка главной дирректории папок пользователя
 def user_folder(remover: int, user_id: int, parent_id: int) -> InlineKeyboardMarkup:
     keyboard = InlineKeyboardBuilder()
-    print(parent_id)
     if parent_id != 0:
         folder = Folderx.get(id=parent_id)
-        print(folder)
+        keyboard.row(
+            ikb("✏️ Редактировать", data=f"folder_edit:{parent_id}")
+        ),
         keyboard.row(
             ikb("⬅️ Вверх", data=f"folder_open:{folder.folder_id}"), ikb("➕ Создать папку здесь", data=f"folder_create:{parent_id}")
         )

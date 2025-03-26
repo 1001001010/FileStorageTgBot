@@ -6,6 +6,7 @@ from aiogram.types import Message
 
 from tgbot.database.db_users import UserModel
 from tgbot.database.db_files import Filex
+from tgbot.database.db_folders import Folderx
 from tgbot.keyboards.inline_file import abort_upload_finl, prod_item_file_swipe_fp
 from tgbot.keyboards.inline_folder import user_folder
 from tgbot.utils.misc.bot_models import FSM, ARS
@@ -31,6 +32,7 @@ async def user_button_my_files(message: Message, bot: Bot, state: FSM, arSession
     await state.clear()
 
     files = Filex.gets(user_id=User.id)
+    folders = Folderx.gets(user_id=User.id)
     extensions = [file.name.split('.')[-1] for file in files if '.' in file.name]
     counter = Counter(extensions)
     top_extensions = ', '.join(f"\n.{ext} ({count})" for ext, count in counter.most_common(5)) if extensions else "Нет файлов"
@@ -39,7 +41,8 @@ async def user_button_my_files(message: Message, bot: Bot, state: FSM, arSession
         ded(f"""
             📁 <b>Ваши файлы</b> 
 
-            📦 <b>Всего файлов:</b> <code>{len(files)}</code> 
+            📦 <b>Всего папок:</b> <code>{len(folders)}</code> 
+            🧮 <b>Всего файлов:</b> <code>{len(files)}</code> 
             🔥 <b>Популярные расширения:</b> <code>{top_extensions}</code>
 
             🔍 <i>Вы можете просмотреть, удалить или скачать файлы</i>

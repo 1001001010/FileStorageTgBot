@@ -80,12 +80,12 @@ class Folderx:
 
     # Редактирование записи
     @staticmethod
-    def update(file_id, **kwargs):
+    def update(folder_id, **kwargs):
         with sqlite3.connect(PATH_DATABASE) as con:
             con.row_factory = dict_factory
             sql = f"UPDATE {Folderx.storage_name} SET"
             sql, parameters = update_format(sql, kwargs)
-            parameters.append(file_id)
+            parameters.append(folder_id)
             con.execute(sql + " WHERE id = ?", parameters)
 
     # Удаление записи
