@@ -55,7 +55,7 @@ async def user_buy_count(message: Message, bot: Bot, state: FSM, arSession: ARS,
         folder_id=parent_id
     )
     
-    await state.clear()
+    # await state.clear()
     await message.answer("Папка успешно создана", reply_markup=inl_user_folder_back(parent_id=parent_id, variant=FolderBackVariants.BACK))
     
 
@@ -73,7 +73,7 @@ async def user_folder_back(call: CallbackQuery, bot: Bot, state: FSM, arSession:
             """), reply_markup=user_folder(remover=0, user_id=User.id, parent_id=parent_id)
         )
     
-    
+
 # Редактирование папки
 @router.callback_query(F.data.startswith("folder_edit:"))
 async def user_folder_back(call: CallbackQuery, bot: Bot, state: FSM, arSession: ARS, User: UserModel):
@@ -103,3 +103,12 @@ async def user_buy_count(message: Message, bot: Bot, state: FSM, arSession: ARS,
     )
 
     await message.answer("Название успешно изменено")
+    
+
+# Страница папок
+@router.callback_query(F.data.startswith("folder_swipe:"))
+async def user_buy_category_swipe(call: CallbackQuery, bot: Bot, state: FSM, arSession: ARS, User: UserModel):
+    remover = int(call.data.split(":")[2])
+    parent_id = int(call.data.split(":")[1])
+
+    await call.message.edit_reply_markup(reply_markup=user_folder(remover, User.id, parent_id))

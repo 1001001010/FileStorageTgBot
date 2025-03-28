@@ -8,8 +8,9 @@ from tgbot.database.db_users import UserModel
 from tgbot.database.db_files import Filex
 from tgbot.database.db_extensions import Extensionsx
 from tgbot.database.db_mime_types import MimeTypesx
-from tgbot.keyboards.inline_file import prod_item_file_swipe_fp
+from tgbot.keyboards.inline_file import prod_item_file_swipe_fp, folder_for_load, abort_upload_finl
 from tgbot.utils.misc.bot_models import FSM, ARS
+from tgbot.utils.misc.files import encrypt_downloaded_file
 from tgbot.utils.const_functions import ded, format_size
 
 from tgbot.utils.misc.files import validate_file, download_file_and_generate_name, get_file_hash
@@ -54,9 +55,11 @@ async def user_upload_file(message: Message, bot: Bot, state: FSM, arSession: AR
             mime_type_id=mime.id,
             file_hash=file_hash,
             user_id=User.id,
-            size=message.document.file_size
+            size=message.document.file_size,
+            folder_id=(await state.get_data())['parent_id']
         )
-
+        
+        encrypted_file_path = encrypt_downloaded_file(download_path)
         await message.answer(ded(f"""
             Файл <code>{message.document.file_name}</code> ({format_size(message.document.file_size)}) успешно загружен
             """))
@@ -79,3 +82,61 @@ async def user_buy_category_swipe(call: CallbackQuery, bot: Bot, state: FSM, arS
     remover = int(call.data.split(":")[1])
 
     await call.message.edit_reply_markup(reply_markup=prod_item_file_swipe_fp(remover, User.id))
+    
+    
+# Страница папок при загрузке файлов
+@router.callback_query(F.data.startswith("folder_for_upload_swipe:"))
+async def user_buy_category_swipe(call: CallbackQuery, bot: Bot, state: FSM, arSession: ARS, User: UserModel):
+    remover = int(call.data.split(":")[2])
+    parent_id = int(call.data.split(":")[1])
+
+    await call.message.edit_reply_markup(reply_markup=folder_for_load(remover, User.id, parent_id))
+    
+    
+# Переход в папку для загрузки файла
+@router.callback_query(F.data.startswith("upload_in:"))
+async def user_buy_category_swipe(call: CallbackQuery, bot: Bot, state: FSM, arSession: ARS, User: UserModel):
+    parent_id = int(call.data.split(":")[1])
+
+    await call.message.edit_reply_markup(reply_markup=folder_for_load(0, User.id, parent_id))
+    
+
+# Возвращение в папку
+@router.callback_query(F.data.startswith("folder_back_upload:"))
+async def user_folder_back(call: CallbackQuery, bot: Bot, state: FSM, arSession: ARS, User: UserModel):
+    parent_id = int(call.data.split(":")[1])
+    await call.message.delete()
+    
+    await call.message.answer(
+        ded("""
+            📁 <b>Выберите папку для загрузки:</b>
+            
+            🔹 Укажите, в какую папку вы хотите загрузить файлы
+        """), reply_markup=folder_for_load(remover=0, user_id=User.id, parent_id=parent_id)
+    )
+    
+    
+# Загрузка в папку
+@router.callback_query(F.data.startswith("upload_here:"))
+async def user_folder_back(call: CallbackQuery, bot: Bot, state: FSM, arSession: ARS, User: UserModel):
+    parent_id = int(call.data.split(":")[1])
+    await call.message.delete()
+    
+    await state.update_data(parent_id=parent_id) 
+    await state.set_state("load_files")
+    await call.message.answer(
+        "📁 Отправьте файл для его загрузки", reply_markup=abort_upload_finl()
+    )
+    
+    
+# Дейсвтия с файлами
+@router.callback_query(F.data.startswith("upload_here:"))
+async def user_folder_back(call: CallbackQuery, bot: Bot, state: FSM, arSession: ARS, User: UserModel):
+    parent_id = int(call.data.split(":")[1])
+    await call.message.delete()
+    
+    await state.update_data(parent_id=parent_id) 
+    await state.set_state("load_files")
+    await call.message.answer(
+        "📁 Отправьте файл для его загрузки", reply_markup=abort_upload_finl()
+    )

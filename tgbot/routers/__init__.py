@@ -3,7 +3,7 @@ from aiogram import Dispatcher, F
 
 from tgbot.routers import main_errors, main_missed, main_start
 from tgbot.routers.admin import admin_menu
-from tgbot.routers.user import user_menu, user_folder, user_file
+from tgbot.routers.user import user_menu, user_folder, user_file, folder_and_files
 from tgbot.utils.misc.bot_filters import IsAdmin
 
 
@@ -16,6 +16,7 @@ def register_all_routers(dp: Dispatcher):
     user_menu.router.message.filter(F.chat.type == "private")
     user_folder.router.message.filter(F.chat.type == "private")
     user_file.router.message.filter(F.chat.type == "private")
+    folder_and_files.router.message.filter(F.chat.type == "private")
     admin_menu.router.message.filter(F.chat.type == "private", IsAdmin())
 
     main_missed.router.message.filter(F.chat.type == "private")
@@ -29,6 +30,7 @@ def register_all_routers(dp: Dispatcher):
     dp.include_router(user_menu.router)
     dp.include_router(user_folder.router)
     dp.include_router(user_file.router)
+    dp.include_router(folder_and_files.router)
     
     # Роуты админов
     dp.include_router(admin_menu.router)

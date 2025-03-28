@@ -7,7 +7,7 @@ from aiogram.types import Message
 from tgbot.database.db_users import UserModel
 from tgbot.database.db_files import Filex
 from tgbot.database.db_folders import Folderx
-from tgbot.keyboards.inline_file import abort_upload_finl, prod_item_file_swipe_fp
+from tgbot.keyboards.inline_file import folder_for_load, prod_item_file_swipe_fp
 from tgbot.keyboards.inline_folder import user_folder
 from tgbot.utils.misc.bot_models import FSM, ARS
 from tgbot.utils.const_functions import ded
@@ -19,10 +19,13 @@ router = Router(name=__name__)
 @router.message(F.text == '📤 Загрузить файлы')
 async def user_button_upload_file(message: Message, bot: Bot, state: FSM, arSession: ARS, User: UserModel):
     await state.clear()
-
-    await state.set_state("load_files")
+    
     await message.answer(
-        "📁 Отправьте файл для его загрузки", reply_markup=abort_upload_finl()
+        ded("""
+            📁 <b>Выберите папку для загрузки:</b>
+            
+            🔹 Укажите, в какую папку вы хотите загрузить файлы
+        """), reply_markup=folder_for_load(remover=0, user_id=User.id, parent_id=0)
     )
     
     
@@ -46,7 +49,7 @@ async def user_button_my_files(message: Message, bot: Bot, state: FSM, arSession
             🔥 <b>Популярные расширения:</b> <code>{top_extensions}</code>
 
             🔍 <i>Вы можете просмотреть, удалить или скачать файлы</i>
-            """), reply_markup=prod_item_file_swipe_fp(0, User.id)
+            """), reply_markup=prod_item_file_swipe_fp(0, User.id, 0)
         )
 
 

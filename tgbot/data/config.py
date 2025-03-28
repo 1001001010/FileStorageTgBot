@@ -15,6 +15,7 @@ BOT_TOKEN = BOT_TOKEN['settings']['bot_token'].strip().replace(' ', '')
 PATH_DATABASE = "tgbot/data/database.db"  # Путь к БД
 PATH_LOGS = "tgbot/data/logs.log"  # Путь к Логам
 PATH_FILES = "./files"  # Путь к загруженным файлам
+ENCRYPTION_KEY = "./tgbot/data/encryption_key.key"  # Путь к ключу шифрования
 
 # Образы и конфиги
 BOT_STATUS_NOTIFICATION = False  # Оповещение админам о запуске бота (True или False)

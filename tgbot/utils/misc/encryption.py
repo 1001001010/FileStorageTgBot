@@ -2,9 +2,11 @@ import os
 import colorama
 from cryptography.fernet import Fernet
 
+from tgbot.data.config import ENCRYPTION_KEY
+
 
 # Генерация ключа
-def generate_encryption_key(key_path="./tgbot/data/encryption_key.key"):
+def generate_encryption_key(key_path=ENCRYPTION_KEY):
     if not os.path.exists(key_path):
         key = Fernet.generate_key()
         with open(key_path, "wb") as key_file:
@@ -15,7 +17,7 @@ def generate_encryption_key(key_path="./tgbot/data/encryption_key.key"):
 
 
 # Загрузка ключа
-def load_key(key_path="./tgbot/data/encryption_key.key"):
+def load_key(key_path=ENCRYPTION_KEY):
     if not os.path.exists(key_path):
         raise FileNotFoundError("Ключ шифрования не найден")
 
@@ -26,9 +28,8 @@ def load_key(key_path="./tgbot/data/encryption_key.key"):
 
 
 # Шифрование файла
-def encrypt_file(file_path, key_path="./tgbot/data/encryption_key.key"):
+def encrypt_file(file_path, key_path=ENCRYPTION_KEY):
     if not os.path.exists(file_path):
-        print(colorama.Fore.RED + f"Файл {file_path} не найден!")
         return None
 
     try:
@@ -47,13 +48,12 @@ def encrypt_file(file_path, key_path="./tgbot/data/encryption_key.key"):
 
         return enc_path
 
-    except Exception as e:
-        print(colorama.Fore.RED + f"Ошибка при шифровании: {e}")
-        return None
+    except:
+        ...
 
 
 # Расшифровка файла
-def decrypt_file(encrypted_path, key_path="./tgbot/data/encryption_key.key"):
+def decrypt_file(encrypted_path, key_path=ENCRYPTION_KEY):
     if not os.path.exists(encrypted_path):
         print(colorama.Fore.RED + f"Файл {encrypted_path} не найден!")
         return None
@@ -70,9 +70,7 @@ def decrypt_file(encrypted_path, key_path="./tgbot/data/encryption_key.key"):
         with open(decrypted_path, "wb") as f:
             f.write(decrypted_data)
 
-        print(colorama.Fore.YELLOW + f"Файл {encrypted_path} расшифрован -> {decrypted_path}")
         return decrypted_path
 
-    except Exception as e:
-        print(colorama.Fore.RED + f"Ошибка при расшифровке: {e}")
-        return None
+    except:
+        ...

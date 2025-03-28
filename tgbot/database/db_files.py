@@ -17,7 +17,8 @@ class FileModel(BaseModel):
     size: int  # Размер файла в байтах
     views: int  # Кол-во просмотров
     created_at: int  # Дата создания файла в UNIX-времени
-
+    folder_id: int  # Родительская папка
+    
 class Filex:
     storage_name = "Files"
 
@@ -31,6 +32,7 @@ class Filex:
             user_id: int,
             file_hash: str,
             size: int,
+            folder_id: int,
     ):
         created_at = get_unix()
         with sqlite3.connect(PATH_DATABASE) as con:
@@ -38,10 +40,10 @@ class Filex:
             con.execute(
                 ded(f"""
                     INSERT INTO {Filex.storage_name} (
-                        name, path, extensions_id, mime_type_id, file_hash, user_id, size, created_at
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                        name, path, extensions_id, mime_type_id, file_hash, user_id, size, created_at, folder_id
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """),
-                [name, path, extensions_id, mime_type_id, file_hash, user_id, size, created_at]
+                [name, path, extensions_id, mime_type_id, file_hash, user_id, size, created_at, folder_id]
             )
 
     # Получение записи

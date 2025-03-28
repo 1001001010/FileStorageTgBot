@@ -36,12 +36,12 @@ def user_folder(remover: int, user_id: int, parent_id: int) -> InlineKeyboardMar
                 
                 keyboard.row(
                     ikb(
-                        "📁" + user_folder.name,
+                        "📁 " + user_folder.name,
                         data=f"folder_open:{user_folder.id}",
                     )
                 )
 
-    buildp_kb = build_pagination_finl(get_folders, f"folder_swipe", remover)
+    buildp_kb = build_pagination_finl(get_folders, f"folder_swipe:{parent_id}", remover)
     keyboard.row(*buildp_kb)
 
     return keyboard.as_markup()
