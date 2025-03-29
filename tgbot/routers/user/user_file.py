@@ -27,17 +27,24 @@ async def user_upload_file(message: Message, bot: Bot, state: FSM, arSession: AR
         return
     
     try:
+        original_file_name = message.document.file_name
+        
         download_path, new_file_name = await download_file_and_generate_name(bot, message.document.file_id, message.document.file_name)
+        
+        file_name = os.path.splitext(original_file_name)[0]
+        
         file_hash = get_file_hash(download_path, hash_algorithm='sha256')
         existing_file = Filex.get(file_hash=file_hash, user_id=User.id)
+        
         if existing_file:
             await message.answer(f"❌ Файл <code>{message.document.file_name}</code> уже был загружен вами!")
             return
+        
         existing_file_other_user = Filex.get(file_hash=file_hash)
         if existing_file_other_user:
             pass
 
-        file_extension = os.path.splitext(message.document.file_name)[1].lower()
+        file_extension = os.path.splitext(original_file_name)[1].lower()
         extension = Extensionsx.get(extension=file_extension)
         if not extension:
             Extensionsx.add(file_extension)
@@ -49,7 +56,7 @@ async def user_upload_file(message: Message, bot: Bot, state: FSM, arSession: AR
             mime = MimeTypesx.get(mime_type=message.document.mime_type)
 
         Filex.add(
-            name=message.document.file_name,
+            name=file_name,
             path=download_path,
             extensions_id=extension.id,
             mime_type_id=mime.id,
@@ -60,11 +67,13 @@ async def user_upload_file(message: Message, bot: Bot, state: FSM, arSession: AR
         )
         
         encrypted_file_path = encrypt_downloaded_file(download_path)
+        
         await message.answer(ded(f"""
-            Файл <code>{message.document.file_name}</code> ({format_size(message.document.file_size)}) успешно загружен
+            Файл <code>{original_file_name}</code> ({format_size(message.document.file_size)}) успешно загружен
             """))
     except Exception as e:
         await message.answer(f"❌ Ошибка при загрузке файла: {e}")
+
 
 
 # Отмена загрузки файла

@@ -1,4 +1,5 @@
 import sqlite3
+from typing import Optional
 from pydantic import BaseModel
 
 from tgbot.data.config import PATH_DATABASE
@@ -18,6 +19,7 @@ class FileModel(BaseModel):
     views: int  # Кол-во просмотров
     created_at: int  # Дата создания файла в UNIX-времени
     folder_id: int  # Родительская папка
+    extension: Optional[str] = None   # Расширение файла
     
 class Filex:
     storage_name = "Files"
@@ -57,6 +59,15 @@ class Filex:
             response = con.execute(sql, parameters).fetchone()
 
             if response is not None:
+                extension_id = response['extensions_id']
+                extension_query = "SELECT extension FROM Extensions WHERE id = ?"
+                extension_result = con.execute(extension_query, (extension_id,)).fetchone()
+                
+                if extension_result:
+                    response['extension'] = extension_result['extension']
+                else:
+                    response['extension'] = ""
+                    
                 response = FileModel(**response)
 
             return response
@@ -66,7 +77,14 @@ class Filex:
     def gets(**kwargs) -> list[FileModel]:
         with sqlite3.connect(PATH_DATABASE) as con:
             con.row_factory = dict_factory
-            sql = f"SELECT * FROM {Filex.storage_name}"
+            sql = f"""
+                SELECT 
+                    Files.*, 
+                    Extensions.extension AS extension
+                FROM {Filex.storage_name} AS Files
+                LEFT JOIN Extensions ON Files.extensions_id = Extensions.id
+            """
+            
             sql, parameters = update_format_where(sql, kwargs)
 
             response = con.execute(sql, parameters).fetchall()

@@ -37,10 +37,9 @@ def prod_item_file_swipe_fp(remover: int, user_id: int, parent_id: int) -> Inlin
     for count, select in enumerate(range(remover, len(get_files))):
         if count < 10:
             user_file = get_files[select]
-
             keyboard.row(
                 ikb(
-                    user_file.name,
+                    user_file.name + user_file.extension,
                     data=f"folder_and_file_open:file:{user_file.id}",
                 )
             )
@@ -96,7 +95,8 @@ def folder_for_load(remover: int, user_id: int, parent_id: int) -> InlineKeyboar
 # Открытие меню управления файлом
 def file_menu(file_id: int) -> InlineKeyboardMarkup:
     keyboard = InlineKeyboardBuilder()
-    
+    parent_id = Filex.get(id=file_id)
+        
     keyboard.row(
         ikb("📥 Скачать файл", data=f"file:download:{file_id}"),
     )
@@ -107,7 +107,30 @@ def file_menu(file_id: int) -> InlineKeyboardMarkup:
     )
 
     keyboard.row(
-        ikb("⬅️ Назад", data=f"file:back:{file_id}")
+        ikb("⬅️ Назад", data=f"back_to_folder:{parent_id.folder_id}")
+    )
+
+    return keyboard.as_markup()
+
+
+# Возвращение к файлу
+def back_to_file(file_id: int) -> InlineKeyboardMarkup:
+    keyboard = InlineKeyboardBuilder()
+    
+    keyboard.row(
+        ikb("🔙 Вернуться к файлу", data=f"folder_and_file_open:file:{file_id}")
+    )
+    
+    return keyboard.as_markup()
+
+
+# Подтверждение удаления файла
+def del_file(file_id: int) -> InlineKeyboardMarkup:
+    keyboard = InlineKeyboardBuilder()
+    
+    keyboard.row(
+        ikb("❌ Отменить", data=f"folder_and_file_open:file:{file_id}"),
+        ikb("✅ Подтвердить", data=f"delete_file:{file_id}")
     )
 
     return keyboard.as_markup()
