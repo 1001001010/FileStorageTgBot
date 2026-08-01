@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Виртуальное окружение
+.venv/
+venv/
+env/
+ENV/
+pyvenv.cfg
+
+# Зависимости и сборка
+build/
+dist/
+*.egg-info/
+.eggs/
+*.egg
+
+# Локальные настройки и секреты
+.env
+.env.*
+settings.ini
+!.env.example
+
+# База данных и логи бота
+tgbot/data/*.db
+tgbot/data/*.db-*
+tgbot/data/*.sqlite
+tgbot/data/*.sqlite-*
+tgbot/data/*.sqlite3
+tgbot/data/*.sqlite3-*
+tgbot/data/*.log
+tgbot/data/logs.log*
+tgbot/data/sv_log_*.log*
+
+# Кеш инструментов
+.ruff_cache/
+.mypy_cache/
+
+# IDE и системный мусор
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Локальные временные файлы
+other/
+tmp/
+temp/
