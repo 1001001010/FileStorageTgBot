@@ -5,13 +5,13 @@ from pathlib import Path
 
 import colorlog
 
-from tgbot.data.config import PATH_LOGS
+from tgbot.data.config import settings
 
 LOG_FILE_MAX_BYTES = 5 * 1024 * 1024
 LOG_FILE_BACKUP_COUNT = 5
 
 # Папка под логи создается сама, чтобы бот не падал на старте
-log_path = Path(PATH_LOGS)
+log_path = Path(settings.logs_path)
 log_path.parent.mkdir(parents=True, exist_ok=True)
 
 # Один общий логгер для всего шаблона

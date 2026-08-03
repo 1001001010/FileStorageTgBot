@@ -12,7 +12,7 @@ from aiogram.types import (InlineKeyboardButton, KeyboardButton, WebAppInfo, Mes
                            ReplyKeyboardMarkup)
 from pytz import timezone
 
-from tgbot.data.config import get_admins, BOT_TIMEZONE
+from tgbot.data.config import get_admins, settings
 from tgbot.utils.misc.bot_logging import bot_logger
 
 
@@ -113,7 +113,7 @@ def split_list(get_list: list, count: int) -> List[list]:
 
 # Возвращает текущую дату, при full=True еще и время
 def get_date(full: bool = True) -> str:
-    bot_timezone = timezone(BOT_TIMEZONE)
+    bot_timezone = timezone(settings.timezone)
 
     if full:
         return datetime.now(bot_timezone).strftime("%d.%m.%Y %H:%M:%S")
@@ -131,7 +131,7 @@ def get_unix(full: bool = False) -> int:
 
 # Конвертирует дату в Unix и обратно
 def convert_date(from_time, full=True, second=True) -> Union[str, int]:
-    bot_timezone = timezone(BOT_TIMEZONE)
+    bot_timezone = timezone(settings.timezone)
     from_time = str(from_time).strip().replace("-", ".")
 
     if from_time.isdigit():

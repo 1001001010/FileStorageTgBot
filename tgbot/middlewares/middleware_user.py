@@ -2,14 +2,14 @@
 from aiogram import BaseMiddleware
 from cachetools import TTLCache
 
-from tgbot.data.config import BOT_USER_CACHE_TTL
+from tgbot.data.config import settings
 from tgbot.database.db_users import UsersRepository
 from tgbot.utils.const_functions import clear_html
 
 
 # Проверка юзера в БД и его добавление/обновление
 class ExistsUserMiddleware(BaseMiddleware):
-    def __init__(self, cache_ttl: int = BOT_USER_CACHE_TTL) -> None:
+    def __init__(self, cache_ttl: int = settings.user_cache_ttl) -> None:
         self.users = UsersRepository()
         self.cache = TTLCache(maxsize=10_000, ttl=cache_ttl)
 

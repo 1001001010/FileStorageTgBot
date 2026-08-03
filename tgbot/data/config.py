@@ -3,7 +3,6 @@ from functools import lru_cache
 from pathlib import Path
 from typing import List
 
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from pydantic import AliasChoices, Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pytz import UnknownTimeZoneError, timezone
@@ -105,17 +104,6 @@ def get_settings() -> Settings:
 
 settings = get_settings()
 
-# Константы чтобы не ломать старые импорты в шаблоне
-BOT_TOKEN = settings.bot_token.replace(" ", "")
-PATH_DATABASE = str(settings.resolve_path(settings.database_path))
-PATH_LOGS = str(settings.resolve_path(settings.logs_path))
-BOT_STATUS_NOTIFICATION = settings.status_notification
-BOT_DATABASE_EXPORT = settings.database_export
-BOT_TIMEZONE = settings.timezone
-BOT_USER_CACHE_TTL = settings.user_cache_ttl
-BOT_THROTTLE_RATE = settings.throttle_rate
-BOT_SCHEDULER = AsyncIOScheduler(timezone=BOT_TIMEZONE)
-
 
 # Получение администраторов бота
 def get_admins() -> List[int]:
@@ -124,5 +112,5 @@ def get_admins() -> List[int]:
 
 # Проверка настроек, которые нужны именно для запуска бота
 def validate_bot_config() -> None:
-    if not BOT_TOKEN:
+    if not settings.bot_token:
         raise RuntimeError("В .env не заполнен параметр BOT_TOKEN")

@@ -7,9 +7,9 @@ from sqlalchemy import event
 from sqlalchemy.ext.asyncio import AsyncAttrs, AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
 
-from tgbot.data.config import PATH_DATABASE
+from tgbot.data.config import settings
 
-database_path = Path(PATH_DATABASE)
+database_path = Path(settings.database_path)
 database_url = f"sqlite+aiosqlite:///{database_path.as_posix()}"
 
 engine = create_async_engine(database_url, echo=False)

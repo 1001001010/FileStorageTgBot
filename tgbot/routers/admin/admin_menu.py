@@ -7,14 +7,14 @@ from aiogram.filters import Command
 from aiogram.types import FSInputFile, Message, CallbackQuery
 from aiogram.utils.media_group import MediaGroupBuilder
 
-from tgbot.data.config import BOT_DATABASE_EXPORT, PATH_DATABASE, PATH_LOGS
+from tgbot.data.config import settings
 from tgbot.database.db_users import UserModel
 from tgbot.keyboards.inline_main import admin_finl
 from tgbot.utils.const_functions import get_date
 from tgbot.utils.misc.bot_models import FSM, ARS
 
 router = Router(name=__name__)
-LOGS_DIR = Path(PATH_LOGS).parent
+LOGS_DIR = Path(settings.logs_path).parent
 SERVICE_LOG_FILES = (
     LOGS_DIR / "sv_log_err.log",
     LOGS_DIR / "sv_log_out.log",
@@ -51,16 +51,16 @@ async def admin_callback_inline(call: CallbackQuery, bot: Bot, state: FSM, arSes
 async def admin_database(message: Message, bot: Bot, state: FSM, arSession: ARS, User: UserModel):
     await state.clear()
 
-    if not BOT_DATABASE_EXPORT:
+    if not settings.database_export:
         await message.answer("<b>📦 Экспорт базы данных отключён в настройках</b>")
         return
 
-    if not Path(PATH_DATABASE).is_file():
+    if not Path(settings.database_path).is_file():
         await message.answer("<b>📦 Файл базы данных не найден</b>")
         return
 
     await message.answer_document(
-        FSInputFile(PATH_DATABASE),
+        FSInputFile(settings.database_path),
         caption=f"<b>📦 #БЭКАП | <code>{get_date()}</code></b>",
     )
 
@@ -72,8 +72,8 @@ async def admin_log(message: Message, bot: Bot, state: FSM, arSession: ARS, User
 
     log_files = []
 
-    if Path(PATH_LOGS).is_file():
-        log_files.append(PATH_LOGS)
+    if Path(settings.logs_path).is_file():
+        log_files.append(settings.logs_path)
 
     for log_file in SERVICE_LOG_FILES:
         if log_file.is_file():
@@ -99,7 +99,7 @@ async def admin_log(message: Message, bot: Bot, state: FSM, arSession: ARS, User
 async def admin_logs_clear(message: Message, bot: Bot, state: FSM, arSession: ARS, User: UserModel):
     await state.clear()
 
-    log_files = [Path(PATH_LOGS), *SERVICE_LOG_FILES]
+    log_files = [Path(settings.logs_path), *SERVICE_LOG_FILES]
 
     for log_file in log_files:
         if not log_file.is_file():

@@ -3,11 +3,12 @@ import asyncio
 import sys
 
 import colorama
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 
-from tgbot.data.config import BOT_DATABASE_EXPORT, BOT_TOKEN, BOT_SCHEDULER, get_admins, validate_bot_config
+from tgbot.data.config import settings, get_admins, validate_bot_config
 from tgbot.database.core import close_database
 from tgbot.database.repository import prepare_database
 from tgbot.middlewares import register_all_middlewares
@@ -24,14 +25,14 @@ def configure_console_output() -> None:
             stream.reconfigure(line_buffering=True, write_through=True)
 
 
+scheduler = AsyncIOScheduler(timezone=settings.timezone)
 configure_console_output()
 colorama.init()
 
-
 # Запуск задач по расписанию
 async def scheduler_start(bot):
-    if BOT_DATABASE_EXPORT:
-        BOT_SCHEDULER.add_job(
+    if settings.database_export:
+        scheduler.add_job(
             autobackup_admin,
             trigger="cron",
             hour=0,
@@ -42,8 +43,8 @@ async def scheduler_start(bot):
             misfire_grace_time=60,
         )
 
-    if not BOT_SCHEDULER.running:
-        BOT_SCHEDULER.start()
+    if not scheduler.running:
+        scheduler.start()
 
 
 # Запуск бота и базовой обвязки
@@ -55,7 +56,7 @@ async def main():
     arSession = AsyncRequestSession()  # Общая сессия aiohttp
 
     bot = Bot(  # Образ Бота
-        token=BOT_TOKEN,
+        token=settings.bot_token,
         default=DefaultBotProperties(
             parse_mode=ParseMode.HTML
         ),
@@ -72,7 +73,7 @@ async def main():
         bot_info = await bot.get_me()
         bot_logger.info("Бот запущен: @%s", bot_info.username)
         print(colorama.Fore.LIGHTYELLOW_EX + f"~~~~~ Бот запущен - @{bot_info.username} ~~~~~")
-        print(colorama.Fore.LIGHTBLUE_EX + "~~~~~ TG developer - @djimbox ~~~~~")
+        print(colorama.Fore.LIGHTBLUE_EX + "~~~~~ TG developer - @lll10010010 ~~~~~")
         print(colorama.Fore.RESET)
 
         if len(get_admins()) == 0:
@@ -88,8 +89,8 @@ async def main():
             allowed_updates=dp.resolve_used_update_types(),
         )
     finally:
-        if BOT_SCHEDULER.running:
-            BOT_SCHEDULER.shutdown(wait=False)
+        if scheduler.running:
+            scheduler.shutdown(wait=False)
 
         await arSession.close()  # Закрытие сессии aiohttp
         await bot.session.close()  # Закрытие сессии API Telegram

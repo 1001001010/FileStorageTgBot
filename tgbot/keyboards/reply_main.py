@@ -11,12 +11,24 @@ def menu_frep(user_id: int) -> ReplyKeyboardMarkup:
     keyboard = ReplyKeyboardBuilder()
 
     keyboard.row(
-        rkb("Пользовательское меню"),
+        rkb("📤 Загрузить"), rkb("📂 Мои файлы")
+    )
+    keyboard.row(
+        rkb("🔗 Общие ссылки"), rkb("⭐ Избранное")
+    )
+    keyboard.row(
+        rkb("🔍 Поиск"), rkb("📊 Хранилище")
+    )
+    keyboard.row(
+        rkb("🗑 Корзина"), rkb("⚙️ Настройки"),
+    )
+    keyboard.row(
+        rkb("❓ Помощь")
     )
 
-    if user_id in get_admins():
-        keyboard.row(
-            rkb("Админ-меню"),
-        )
+    # if user_id in get_admins():
+    #     keyboard.row(
+    #         rkb("Админ-меню"),
+    #     )
 
     return keyboard.as_markup(resize_keyboard=True)

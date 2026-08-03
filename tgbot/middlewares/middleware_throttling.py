@@ -7,12 +7,12 @@ from aiogram.dispatcher.flags import get_flag
 from aiogram.types import CallbackQuery, Message, TelegramObject, User
 from cachetools import TTLCache
 
-from tgbot.data.config import BOT_THROTTLE_RATE
+from tgbot.data.config import settings
 
 
 # Простая защита от спама
 class ThrottlingMiddleware(BaseMiddleware):
-    def __init__(self, default_rate: Union[int, float] = BOT_THROTTLE_RATE) -> None:
+    def __init__(self, default_rate: Union[int, float] = settings.throttle_rate) -> None:
         # Базовая задержка между сообщениями
         self.default_rate = default_rate
 
